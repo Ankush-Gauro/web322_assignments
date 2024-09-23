@@ -6,7 +6,10 @@ Student Email:  agauro@myseneca.ca
 Date Created:  2024/09/23
 
 GITHUB URL:  https://github.com/Ankush-Gauro/web322_assignments
-VERCEL URL:   
+VERCEL URL:  web322-assignments-rho.vercel.app
+            web322-assignments-git-main-ankush-gauros-projects.vercel.app
+            web322-assignments-296a1eumb-ankush-gauros-projects.vercel.app
+
 
 ### Technology Stack
 
