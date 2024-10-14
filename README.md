@@ -13,7 +13,7 @@ VERCEL URL:  web322-assignments-rho.vercel.app
 
 ### Technology Stack
 
-**Frontend**:    
+**Frontend**:  Express  
 **Backend**: TBD  
 **Database**: TBD  
 
