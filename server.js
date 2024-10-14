@@ -24,6 +24,27 @@ app.get('/about', (req, res) => {
     res.sendFile(path.join(__dirname,'/views/about.html'));
   });
 
+  app.get('/articles', (req, res) => {
+    contentService.getAllArticles()
+        .then((data) => {
+            res.json(data); // Send the articles data
+        })
+        .catch((err) => {
+            res.json({ message: err }); // Send error message 
+        });
+});
+
+// Route for getting categories
+app.get('/categories', (req, res) => {
+    contentService.getCategories()
+        .then((data) => {
+            res.json(data); // Send the categories data 
+        })
+        .catch((err) => {
+            res.json({ message: err }); // Send error message 
+        });
+});
+
 
 // start the server on the port and output a confirmation to the console
 app.listen(HTTP_PORT, () => console.log(`Express http server listening on port ${HTTP_PORT}`));
