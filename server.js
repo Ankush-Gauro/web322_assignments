@@ -7,9 +7,6 @@ const app = express(); // obtain the "app" object
 const HTTP_PORT = process.env.PORT || 8080; // assign a port
 
 //Get route for index
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '/views/home.html'));
-  });
 
 //Get route for about
 app.get('/about', (req, res) => {
