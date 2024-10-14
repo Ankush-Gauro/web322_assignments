@@ -1,0 +1,19 @@
+
+[
+    {
+    "id": 1,
+    "title": "Artur Beterbiev vs. Dmitry Bivol",
+    "content": "Artur Beterbiev(20-0-20) defeated Dmitry Bivol(23-0-12) by majority decision to become the first undisputed light heavyweight champion in the four-belt era. This was probably the most anticipated fight of 21st century, Many including myself think that this fight was robbed and Bivol should have won the match",
+    "author": "Ankush Gauro",
+    "published": true,
+    "category": "Boxing"
+    },
+    {
+    "id" : 2,
+    "title": "UFC 308",
+    "content": "A UFC Featherweight Championship bout between current champion Ilia Topuria and former champion Max Holloway is to be the headline the event.A five-round middleweight bout between former UFC Middleweight Champion Robert Whittaker and Khamzat Chimaev will also be part of the event.",
+    "author": "Ankush Gauro",
+    "published": false,
+    "category": "MMA"
+    }
+]
