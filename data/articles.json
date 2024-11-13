@@ -6,14 +6,25 @@
     "content": "Artur Beterbiev(20-0-20) defeated Dmitry Bivol(23-0-12) by majority decision to become the first undisputed light heavyweight champion in the four-belt era. This was probably the most anticipated fight of 21st century, Many including myself think that this fight was robbed and Bivol should have won the match",
     "author": "Ankush Gauro",
     "published": true,
-    "category": "Boxing"
+    "category": "Boxing",
+    "featureImage": "https://dummyimage.com/847x320/d9d9d9/545454.jpg"
     },
     {
     "id" : 2,
     "title": "UFC 308",
     "content": "A UFC Featherweight Championship bout between current champion Ilia Topuria and former champion Max Holloway is to be the headline the event.A five-round middleweight bout between former UFC Middleweight Champion Robert Whittaker and Khamzat Chimaev will also be part of the event.",
     "author": "Ankush Gauro",
-    "published": false,
-    "category": "MMA"
-    }
+    "published": true,
+    "category": "MMA",
+    "featureImage": "https://dummyimage.com/847x320/d9d9d9/545454.jpg"
+    },
+    {
+        "id" : 3,
+        "title": "El classico",
+        "content": "Robert Lewandowski scored twice and Lamine Yamal added a third goal to ruin Kylian Mbappé's first Clásico as Barcelona romped to a 4-0 win over Real Madrid",
+        "author": "Ankush Gauro",
+        "published": true,
+        "category": "Football",
+        "featureImage": "https://dummyimage.com/847x320/d9d9d9/545454.jpg"
+        }
 ]
