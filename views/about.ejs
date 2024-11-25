@@ -1,14 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ankush Articles</title>
+    <title><%= pageTitle || 'Ankush Articles' %></title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/css/main.css" rel="stylesheet">
+    <link href="/css/main.css" rel="stylesheet">
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -17,27 +16,27 @@
 
     <header class="bg-primary text-white p-3">
         <div class="container">
-          <nav class="nav justify-content-center">
-            <a class="nav-link text-white" href="/">Home</a>
-            <a class="nav-link text-white" href="/about">About</a>
-            <a class="nav-link text-white" href="/articles">Articles</a>
-            <a class="nav-link text-white" href="/categories">Categories</a>
-            <a class="nav-link text-white" href="/articles/add">Add Article</a>
-          </nav>
+            <nav class="nav justify-content-center">
+                <a class="nav-link text-white" href="/">Home</a>
+                <a class="nav-link text-white" href="/about">About</a>
+                <a class="nav-link text-white" href="/articles">Articles</a>
+                <a class="nav-link text-white" href="/categories">Categories</a>
+                <a class="nav-link text-white" href="/articles/add">Add Article</a>
+            </nav>
         </div>
-      </header>
+    </header>
 
     <!-- Main Content -->
     <div class="container mt-5">
         <h1>About</h1>
-        <p>Hello, this is Ankush Gauro, Student ID: 108593237, class: WEB322-ZCC</p>
-        <p>Welcome to our blog your go-to spot for all things related to sports! From breaking news to in-depth analysis, we cover everything from mma and boxing to  and more. Stay informed and stay in the game with us!</p>
+        <p>Hello, this is <%= name %>, Student ID: <%= studentId %>, class: <%= className %></p>
+        <p>Welcome to our blog, your go-to spot for all things related to computer world! From breaking news to in-depth analysis, we cover everything.</p>
     </div>
 
     <!-- Footer -->
     <footer class="bg-light text-center text-lg-start mt-auto">
         <div class="text-center p-3">
-            Name:Ankush Gauro, Student ID: 108593237, Email:<a href="mailto:agauro@myseneca.ca">agauro@myseneca.ca</a>
+            Name: <%= name %>, Student ID: <%= studentId %>, Email: <a href="mailto:<%= email %>"><%= email %></a>
         </div>
     </footer>
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ankush Articles</title>
+  <title><%= pageTitle || 'Add Article - Ankush Articles' %></title>
   <!-- Bootstrap CSS -->
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <link href="/css/main.css" rel="stylesheet">
@@ -44,10 +44,9 @@
         <div class="mb-3">
             <label for="category" class="form-label">Category</label>
             <select id="category" name="category" class="form-select" required>
-                <option value="News">News</option>
-                <option value="Sports">Sports</option>
-                <option value="Technology">Technology</option>
-                <option value="Entertainment">Entertainment</option>
+                <% categories.forEach(category => { %>
+                    <option value="<%= category %>"><%= category %></option>
+                <% }) %>
             </select>
         </div>
 
@@ -72,7 +71,7 @@
   <!-- Footer -->
   <footer class="bg-dark text-white text-center py-3">
     <div class="container">
-      <p>Ankush Gauro, 108593237<a href="mailto:harry.scanlan@senecapolytechnic.ca">agauro@myseneca.ca</a>. All rights reserved.</p>
+      <p><%= footerText %> <a href="mailto:<%= email %>"><%= email %></a>. All rights reserved.</p>
     </div>
   </footer>
 

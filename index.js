@@ -12,6 +12,10 @@ const streamifier = require("streamifier");
 
 const app = express();
 
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views')); 
+
 cloudinary.config({
     cloud_name: "dwnronnaa",
     api_key: "861817752397373",
@@ -24,6 +28,7 @@ const upload = multer();
 
 const HTTP_PORT = process.env.PORT || 3838;
 
+
 app.use(express.static('public'));
 
 // Route handlers
@@ -32,8 +37,19 @@ app.get('/', (req, res) => {
 });
 
 app.get('/about', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'about.html'));
+    res.render('about', {
+        pageTitle: 'About Ankush Articles',
+        name: 'Ankush Gauro',
+        studentId: '108593237',
+        className: 'WEB322-ZCC',
+        email: 'agauro@myseneca.ca'
+    });
 });
+
+
+
+
+
 
 
 // Route for getting categories
@@ -43,9 +59,16 @@ app.get("/categories", (req, res) => {
   });
 });
 
-app.get("/articles/add", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "addArticle.html"));
+app.get('/articles/add', (req, res) => {
+    res.render('addArticle', {
+        pageTitle: 'Add New Article',
+        categories: ['News', 'Data Science', 'Technology', 'Artificial Intelligence'],
+        footerText: 'Ankush Gauro, 108593237',
+        email: 'agauro@myseneca.ca'
+    });
 });
+
+
 
 app.get('/articles', (req, res, next) => {
   if (req.query.category) {
