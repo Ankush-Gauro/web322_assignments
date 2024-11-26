@@ -70,36 +70,37 @@ app.get('/articles/add', (req, res) => {
 
 
 
-app.get('/articles', (req, res, next) => {
-  if (req.query.category) {
-      // Handle filtering by category
-      contentService.getArticlesByCategory(req.query.category)
-          .then((articles) => {
-              res.json(articles);
-          })
-          .catch((err) => {
-              res.status(404).json({ message: err });
-          });
-  } else if (req.query.minDate) {
-      // Handle filtering by minDate
-      contentService.getArticlesByMinDate(req.query.minDate)
-          .then((articles) => {
-              res.json(articles);
-          })
-          .catch((err) => {
-              res.status(404).json({ message: err });
-          });
-  } else {
-      // If no query parameters, fetch all articles
-      contentService.getAllArticles()
-          .then((articles) => {
-              res.json(articles);
-          })
-          .catch((err) => {
-              res.status(404).json({ message: err });
-          });
-  }
-});
+app.get('/articles', (req, res) => {
+    let filterPromise;
+  
+    if (req.query.category) {
+      // Fetch articles by category
+      filterPromise = contentService.getArticlesByCategory(req.query.category);
+    } else if (req.query.minDate) {
+      // Fetch articles by minimum date
+      filterPromise = contentService.getArticlesByMinDate(req.query.minDate);
+    } else {
+      // Fetch all articles
+      filterPromise = contentService.getAllArticles();
+    }
+  
+    filterPromise
+      .then((data) => {
+        res.render('articles', {
+          pageTitle: 'Articles',
+          articles: data,
+          errorMessage: null, // No error message if data is present
+        });
+      })
+      .catch((err) => {
+        res.render('articles', {
+          pageTitle: 'Articles',
+          articles: [],
+          errorMessage: 'No articles found or an error occurred.',
+        });
+      });
+  });
+  
 
 app.post('/articles/add', upload.single("featureImage"), (req, res) => {
   if (req.file) {
