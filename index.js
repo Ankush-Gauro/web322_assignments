@@ -72,14 +72,29 @@ app.get('/categories', (req, res) => {
   });
   
 
-app.get('/articles/add', (req, res) => {
-    res.render('addArticle', {
-        pageTitle: 'Add New Article',
-        categories: ['News', 'Data Science', 'Technology', 'Artificial Intelligence'],
-        footerText: 'Ankush Gauro, 108593237',
-        email: 'agauro@myseneca.ca'
-    });
-});
+  app.get('/articles/add', (req, res) => {
+    contentService.getCategories()
+      .then((categories) => {
+        res.render('addArticle', {
+          pageTitle: 'Add New Article',
+          categories: categories, // Categories are passed here
+          errorMessage: null, // No error, so errorMessage is null
+          footerText: 'Ankush Gauro, 108593237',
+          email: 'agauro@myseneca.ca'
+        });
+      })
+      .catch((err) => {
+        res.render('addArticle', {
+          pageTitle: 'Add New Article',
+          categories: [], // Pass an empty array if categories fetch fails
+          errorMessage: 'Failed to load categories. Please try again later.', // Error message passed
+          footerText: 'Ankush Gauro, 108593237',
+          email: 'agauro@myseneca.ca'
+        });
+      });
+  });
+  
+  
 
 
 
