@@ -27,47 +27,38 @@
   <main class="container my-4">
     <h1>Articles</h1>
 
-    <!-- Error Message -->
     <% if (errorMessage) { %>
       <div class="alert alert-danger">
         <%= errorMessage %>
       </div>
     <% } %>
 
-    <!-- Articles Table -->
-    <% if (articles && articles.length > 0) { %>
-        <table class="table table-bordered table-striped">
-            <thead class="thead-dark">
-              <tr>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% if (articles && articles.length > 0) { %>
-                <% articles.forEach(article => { %>
-                  <tr>
-                    <td><%= article.title %></td>
-                    <td>
-                      <a href="/articles?category=<%= article.category %>">
-                        <%= article.categoryName || "Unknown Category" %>
-                      </a>
-                    </td>
-                    <td><%= new Date(article.postDate).toLocaleDateString() %></td>
-                  </tr>
-                <% }) %>
-              <% } else { %>
-                <tr>
-                  <td colspan="3">No articles available.</td>
-                </tr>
-              <% } %>
-            </tbody>
-          </table>
-          
-    <% } else { %>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Category</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% articles.forEach(article => { %>
+          <tr>
+            <!-- Link the title to the individual article page using article.Id -->
+            <td><a href="/article/<%= article.Id %>"><%= article.title %></a></td>
+            <td><%= article.author %></td>
+            <td><%= article.categoryName %></td>
+            <td><%= new Date(article.articleDate).toLocaleDateString() %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+
+    <% if (articles.length === 0) { %>
       <p>No articles found.</p>
     <% } %>
+
   </main>
 
   <!-- Footer -->

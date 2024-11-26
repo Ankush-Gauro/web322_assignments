@@ -164,16 +164,37 @@ app.post('/articles/add', upload.single("featureImage"), (req, res) => {
 
  
 
- app.get("/article/:Id", (req, res) => {
-  contentService
-    .getArticleById(req.params.Id)
-    .then((article) => {
-      res.json(article);
-    })
-    .catch((err) => {
-      res.status(404).json({ message: err });
-    });
-});
+app.get('/article/:Id', (req, res) => {
+    const articleId = req.params.Id;
+  
+    // Fetch the article by its ID
+    contentService.getArticleById(articleId)
+      .then((article) => {
+        // Check if the article is published; if not, redirect to 404
+        if (!article.published) {
+          return res.status(404).render('404', { message: 'Article not found or unpublished.' });
+        }
+  
+        // Fetch the category name based on the article's category ID
+        contentService.getCategoryNameById(article.category)
+          .then((categoryName) => {
+            // Attach the category name to the article object
+            article.categoryName = categoryName;
+  
+            // Render the article view with the article data and category name
+            res.render('article', {
+              article: article
+            });
+          })
+          .catch((err) => {
+            res.status(500).json({ message: 'Error fetching category name', error: err });
+          });
+      })
+      .catch((err) => {
+        res.status(404).render('404', { message: 'Article not found.' });
+      });
+  });
+  
 
  
 

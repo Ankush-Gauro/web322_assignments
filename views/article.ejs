@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= article.title %></title>
+  <!-- Add your CSS or Bootstrap link here -->
+</head>
+<body>
+  <div class="container">
+    <h1><%= article.title %></h1>
+    <p><strong>By:</strong> <%= article.author %></p>
+    <p><strong>Category:</strong> <%= article.categoryName %></p>
+    <p><strong>Date:</strong> <%= new Date(article.articleDate).toLocaleDateString() %></p>
+    
+    <% if (article.featureImage) { %>
+      <img src="<%= article.featureImage %>" alt="<%= article.title %>" class="img-fluid">
+    <% } %>
+    
+    <div>
+      <p><%= article.content %></p>
+    </div>
+
+    <a href="/articles">Back to Articles</a>
+  </div>
+</body>
+</html>
