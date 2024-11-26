@@ -53,11 +53,24 @@ app.get('/about', (req, res) => {
 
 
 // Route for getting categories
-app.get("/categories", (req, res) => {
-  contentService.getCategories().then((data) => {
-    res.json(data); // Respond with categories as JSON
+app.get('/categories', (req, res) => {
+    contentService.getCategories()
+      .then((data) => {
+        res.render('categories', {
+          pageTitle: 'Categories',
+          categories: data,
+          errorMessage: null, // No error if data exists
+        });
+      })
+      .catch((err) => {
+        res.render('categories', {
+          pageTitle: 'Categories',
+          categories: [],
+          errorMessage: 'No categories found or an error occurred.',
+        });
+      });
   });
-});
+  
 
 app.get('/articles/add', (req, res) => {
     res.render('addArticle', {
