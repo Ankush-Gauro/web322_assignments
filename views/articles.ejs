@@ -36,28 +36,35 @@
 
     <!-- Articles Table -->
     <% if (articles && articles.length > 0) { %>
-      <table class="table table-bordered table-striped">
-        <thead class="thead-dark">
-          <tr>
-            <th>Title</th>
-            <th>Post Date</th>
-            <th>Category</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% articles.forEach(article => { %>
-            <tr>
-              <td><%= article.title %></td>
-              <td><%= new Date(article.postDate).toLocaleDateString() %></td>
-              <td>
-                <a href="/articles?category=<%= article.category %>">
-                  <%= article.category %>
-                </a>
-              </td>
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+              <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (articles && articles.length > 0) { %>
+                <% articles.forEach(article => { %>
+                  <tr>
+                    <td><%= article.title %></td>
+                    <td>
+                      <a href="/articles?category=<%= article.category %>">
+                        <%= article.categoryName || "Unknown Category" %>
+                      </a>
+                    </td>
+                    <td><%= new Date(article.postDate).toLocaleDateString() %></td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="3">No articles available.</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+          
     <% } else { %>
       <p>No articles found.</p>
     <% } %>

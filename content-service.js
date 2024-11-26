@@ -41,20 +41,29 @@ function addArticle(articleData) {
   });
 }
 
-function getArticlesByCategory(category) {
+function getArticlesByCategory(categoryId) {
   return new Promise((resolve, reject) => {
-    const filteredArticles = articles.filter(
-      (article) => article.category == parseInt(category)
-    );
-    if (filteredArticles.length > 0) resolve(filteredArticles);
-    else reject("no results returned");
+    const filteredArticles = articles.filter(article => article.category === parseInt(categoryId));
+    if (filteredArticles.length > 0) {
+      addCategoryNameToArticles(filteredArticles).then(enrichedArticles => {
+        resolve(enrichedArticles);
+      });
+    } else {
+      reject("no results returned");
+    }
   });
 }
 
 
 function getAllArticles() {
   return new Promise((resolve, reject) => {
-     resolve(articles);
+    if (articles.length > 0) {
+      addCategoryNameToArticles(articles).then(enrichedArticles => {
+        resolve(enrichedArticles);
+      });
+    } else {
+      reject("no results returned");
+    }
   });
 }
 
@@ -94,8 +103,27 @@ function getArticles() {
   return Promise.resolve(articles); // Return the articles array as a resolved promise
 }
 
+function getCategoryNameById(categoryId) {
+  return getCategories().then(categories => {
+    const category = categories.find(cat => cat.Id === categoryId);  // Match by `Id` in categories.json
+    return category ? category.Name : null;  // Return the Name field of the category
+  });
+}
+
+function addCategoryNameToArticles(articles) {
+  return Promise.all(articles.map(article => {
+    return getCategoryNameById(article.category)
+      .then(categoryName => ({
+        ...article,
+        categoryName: categoryName || "Unknown"  // Add categoryName or "Unknown" if not found
+      }));
+  }));
+}
+
 // Export the functions as an object to make them available to other files
 module.exports = {
+  addCategoryNameToArticles,
+  getCategoryNameById,
   initialize,
   getAllArticles,
   getCategories,

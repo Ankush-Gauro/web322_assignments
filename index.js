@@ -84,35 +84,33 @@ app.get('/articles/add', (req, res) => {
 
 
 app.get('/articles', (req, res) => {
-    let filterPromise;
+    let articlesPromise;
   
     if (req.query.category) {
-      // Fetch articles by category
-      filterPromise = contentService.getArticlesByCategory(req.query.category);
+      articlesPromise = contentService.getArticlesByCategory(req.query.category);
     } else if (req.query.minDate) {
       // Fetch articles by minimum date
       filterPromise = contentService.getArticlesByMinDate(req.query.minDate);
-    } else {
-      // Fetch all articles
-      filterPromise = contentService.getAllArticles();
-    }
-  
-    filterPromise
-      .then((data) => {
-        res.render('articles', {
-          pageTitle: 'Articles',
-          articles: data,
-          errorMessage: null, // No error message if data is present
+    }  else {
+        articlesPromise = contentService.getAllArticles();
+      }
+    
+      articlesPromise
+        .then(articles => {
+          res.render('articles', {
+            pageTitle: 'Articles',
+            articles: articles,
+            errorMessage: articles.length === 0 ? 'No articles found.' : null,
+          });
+        })
+        .catch(err => {
+          res.render('articles', {
+            pageTitle: 'Articles',
+            articles: [],
+            errorMessage: 'Unable to fetch articles. Please try again later.',
+          });
         });
-      })
-      .catch((err) => {
-        res.render('articles', {
-          pageTitle: 'Articles',
-          articles: [],
-          errorMessage: 'No articles found or an error occurred.',
-        });
-      });
-  });
+    });
   
 
 app.post('/articles/add', upload.single("featureImage"), (req, res) => {
