@@ -54,22 +54,23 @@ app.get('/about', (req, res) => {
 
 // Route for getting categories
 app.get('/categories', (req, res) => {
-    contentService.getCategories()
-      .then((data) => {
-        res.render('categories', {
-          pageTitle: 'Categories',
-          categories: data,
-          errorMessage: null, // No error if data exists
-        });
-      })
-      .catch((err) => {
-        res.render('categories', {
-          pageTitle: 'Categories',
-          categories: [],
-          errorMessage: 'No categories found or an error occurred.',
-        });
+  contentService.getCategories()
+    .then((categories) => {
+      res.render('categories', {
+        pageTitle: 'Categories',
+        categories: categories,
+        errorMessage: null,
       });
-  });
+    })
+    .catch(() => {
+      res.render('categories', {
+        pageTitle: 'Categories',
+        categories: [],
+        errorMessage: 'No categories found or an error occurred.',
+      });
+    });
+});
+
   
 
   app.get('/articles/add', (req, res) => {
@@ -98,118 +99,124 @@ app.get('/categories', (req, res) => {
 
 
 
-app.get('/articles', (req, res) => {
+  app.get('/articles', (req, res) => {
     let articlesPromise;
   
     if (req.query.category) {
+      // Fetch articles by category
       articlesPromise = contentService.getArticlesByCategory(req.query.category);
     } else if (req.query.minDate) {
       // Fetch articles by minimum date
-      filterPromise = contentService.getArticlesByMinDate(req.query.minDate);
-    }  else {
-        articlesPromise = contentService.getAllArticles();
-      }
-    
-      articlesPromise
-        .then(articles => {
-          res.render('articles', {
-            pageTitle: 'Articles',
-            articles: articles,
-            errorMessage: articles.length === 0 ? 'No articles found.' : null,
-          });
-        })
-        .catch(err => {
-          res.render('articles', {
-            pageTitle: 'Articles',
-            articles: [],
-            errorMessage: 'Unable to fetch articles. Please try again later.',
-          });
+      articlesPromise = contentService.getArticlesByMinDate(req.query.minDate);
+    } else {
+      // Fetch all articles
+      articlesPromise = contentService.getAllArticles();
+    }
+  
+    articlesPromise
+      .then((articles) => {
+        res.render('articles', {
+          pageTitle: 'Articles',
+          articles: articles,
+          errorMessage: articles.length === 0 ? 'No articles found.' : null, // Display a message if no articles are found
         });
-    });
-  
-
-app.post('/articles/add', upload.single("featureImage"), (req, res) => {
-  if (req.file) {
-      let streamUpload = (req) => {
-          return new Promise((resolve, reject) => {
-              let stream = cloudinary.uploader.upload_stream(
-                  { folder: 'articles' }, // Optional: Store in a specific folder
-                  (error, result) => {
-                      if (result) resolve(result);
-                      else reject(error);
-                  }
-              );
-              streamifier.createReadStream(req.file.buffer).pipe(stream);
-          });
-      };
-
-      async function uploadToCloudinary(req) {
-          let result = await streamUpload(req);
-          return result.url; // Return the uploaded image URL
-      }
-
-      uploadToCloudinary(req)
-          .then((imageUrl) => {
-              processArticle(imageUrl);
-          })
-          .catch((err) => {
-              res.status(500).json({ message: 'Image upload failed', error: err });
-          });
-  } else {
-      processArticle(""); // If no image uploaded, pass an empty string
-  }
-
-  function processArticle(imageUrl) {
-      // Build the article object
-      const articleData = {
-          title: req.body.title,
-          content: req.body.content,
-          category: req.body.category,
-          published: req.body.published === 'on', // Checkbox value
-          featureImage: imageUrl || "", // Use the uploaded image URL or empty string
-          postDate: new Date().toISOString() // Current timestamp
-      };
-
-      // Call content-service to add the article
-      contentService.addArticle(articleData)
-          .then(() => res.redirect('/articles')) // Redirect to articles page on success
-          .catch((err) => res.status(500).json({ message: 'Failed to add article', error: err }));
-  }
-});
-
- 
-
-app.get('/article/:Id', (req, res) => {
-    const articleId = req.params.Id;
-  
-    // Fetch the article by its ID
-    contentService.getArticleById(articleId)
-      .then((article) => {
-        // Check if the article is published; if not, redirect to 404
-        if (!article.published) {
-          return res.status(404).render('404', { message: 'Article not found or unpublished.' });
-        }
-  
-        // Fetch the category name based on the article's category ID
-        contentService.getCategoryNameById(article.category)
-          .then((categoryName) => {
-            // Attach the category name to the article object
-            article.categoryName = categoryName;
-  
-            // Render the article view with the article data and category name
-            res.render('article', {
-              article: article
-            });
-          })
-          .catch((err) => {
-            res.status(500).json({ message: 'Error fetching category name', error: err });
-          });
       })
       .catch((err) => {
-        res.status(404).render('404', { message: 'Article not found.' });
+        res.render('articles', {
+          pageTitle: 'Articles',
+          articles: [],
+          errorMessage: 'Unable to fetch articles. Please try again later.', // Display a generic error message if something goes wrong
+        });
       });
   });
   
+  
+
+  app.post('/articles/add', upload.single("featureImage"), (req, res) => {
+    let processImage = Promise.resolve(""); // Default to no image URL
+  
+    if (req.file) {
+      const streamUpload = (req) => {
+        return new Promise((resolve, reject) => {
+          let stream = cloudinary.uploader.upload_stream(
+            { folder: 'articles' },
+            (error, result) => {
+              if (result) resolve(result.url);
+              else reject(error);
+            }
+          );
+          streamifier.createReadStream(req.file.buffer).pipe(stream);
+        });
+      };
+  
+      processImage = streamUpload(req);
+    }
+  
+    processImage
+      .then((imageUrl) => {
+        const articleData = {
+          title: req.body.title,
+          content: req.body.content,
+          category: parseInt(req.body.category),
+          published: req.body.published === 'on',
+          featureImage: imageUrl,
+          postDate: new Date().toISOString(),
+        };
+  
+        return contentService.addArticle(articleData);
+      })
+      .then(() => res.redirect('/articles'))
+      .catch(() => res.status(500).send('Failed to add article'));
+  });
+  
+
+ 
+
+app.get('/article/:id', (req, res) => {
+  const articleId = req.params.id;
+
+  contentService.getArticleById(articleId)
+    .then((article) => {
+      if (!article) {
+        return res.status(404).render('404', { message: 'Article not found.' });
+      }
+      contentService.getCategoryNameById(article.category)
+        .then((categoryName) => {
+          article.categoryName = categoryName;
+          res.render('article', {
+            pageTitle: article.title,
+            article: article,
+          });
+        });
+    })
+    .catch(() => res.status(404).render('404', { message: 'Article not found.' }));
+});
+
+  
+app.put('/articles/:id', (req, res) => {
+  const articleId = req.params.id;
+  const articleData = {
+    title: req.body.title,
+    content: req.body.content,
+    category: parseInt(req.body.category),
+    published: req.body.published === 'on',
+    featureImage: req.body.featureImage,
+    postDate: req.body.postDate,
+  };
+
+  contentService.updateArticle(articleId, articleData)
+    .then(() => res.redirect(`/article/${articleId}`))
+    .catch(() => res.status(500).send('Failed to update article'));
+});
+
+
+app.delete('/articles/:id', (req, res) => {
+  const articleId = req.params.id;
+
+  contentService.deleteArticle(articleId)
+    .then(() => res.redirect('/articles'))
+    .catch(() => res.status(500).send('Failed to delete article'));
+});
 
  
 

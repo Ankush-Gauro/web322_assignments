@@ -45,16 +45,16 @@ function initialize() {
   });
 }
 
-function addArticle(articleData){
-  const { title, content, author, published, category_id, article_date } = articleData;
-  return pool
-    .query(
-      'INSERT INTO articles (title, content, author, published, category_id, article_date) VALUES ($1, $2, $3, $4, $5, $6)',
-      [title, content, author, published, category_id, article_date]
-    )
-    .then(() => 'Article added successfully')
-    .catch(err => Promise.reject('Failed to add article'));
-};
+function addArticle(articleData) {
+  const { title, content, category, published, featureImage, postDate } = articleData;
+  const query = `
+    INSERT INTO articles (title, content, category, published, featureImage, postDate)
+    VALUES ($1, $2, $3, $4, $5, $6)
+  `;
+  const values = [title, content, category, published, featureImage, postDate];
+  return pool.query(query, values);
+}
+
 
 
 function getArticlesByCategory (categoryId){
@@ -143,6 +143,26 @@ function addCategoryNameToArticles(articles) {
   );
 }
 
+function updateArticle(articleId, articleData) {
+  const { title, content, category, published, featureImage, postDate } = articleData;
+  const query = `
+    UPDATE articles
+    SET title = $1, content = $2, category = $3, published = $4, featureImage = $5, postDate = $6
+    WHERE id = $7
+  `;
+  const values = [title, content, category, published, featureImage, postDate, articleId];
+  return pool.query(query, values);
+}
+
+
+
+function deleteArticle(articleId) {
+  return pool.query('DELETE FROM articles WHERE id = $1', [articleId]);
+}
+
+
+
+
 // Export the functions as an object to make them available to other files
 module.exports = {
   addCategoryNameToArticles,
@@ -155,5 +175,7 @@ module.exports = {
   getArticlesByCategory,
   getArticlesByMinDate,
   getArticleById,
+  updateArticle,
+  deleteArticle,
   pool
 };
