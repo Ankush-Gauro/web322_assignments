@@ -2,6 +2,19 @@
 const fs = require("fs");
 const { parse } = require("path");
 
+const { Pool } = require('pg');
+
+const pool = new Pool({
+  user: 'SenecaDB_owner',
+  host: 'ep-broad-sky-a58uyw44.us-east-2.aws.neon.tech',
+  database: 'blog_database',
+  password: 'uXqzYt3igEy8',
+  port: 5432,
+  ssl: { rejectUnauthorized: false },
+});
+
+
+
 // Arrays to store categories and articles data loaded from JSON files
 let categories = [];
 let articles = [];
@@ -32,92 +45,102 @@ function initialize() {
   });
 }
 
-function addArticle(articleData) {
-  return new Promise((resolve, reject) => {
-    articleData.published = articleData.published ? true : false;
-    articleData.id = articles.length + 1; // Set ID to the current length + 1
-    articles.push(articleData);
-    resolve(articleData);
-  });
-}
-
-function getArticlesByCategory(categoryId) {
-  return new Promise((resolve, reject) => {
-    const filteredArticles = articles.filter(article => article.category === parseInt(categoryId));
-    if (filteredArticles.length > 0) {
-      addCategoryNameToArticles(filteredArticles).then(enrichedArticles => {
-        resolve(enrichedArticles);
-      });
-    } else {
-      reject("no results returned");
-    }
-  });
-}
+function addArticle(articleData){
+  const { title, content, author, published, category_id, article_date } = articleData;
+  return pool
+    .query(
+      'INSERT INTO articles (title, content, author, published, category_id, article_date) VALUES ($1, $2, $3, $4, $5, $6)',
+      [title, content, author, published, category_id, article_date]
+    )
+    .then(() => 'Article added successfully')
+    .catch(err => Promise.reject('Failed to add article'));
+};
 
 
-function getAllArticles() {
-  return new Promise((resolve, reject) => {
-    if (articles.length > 0) {
-      addCategoryNameToArticles(articles).then(enrichedArticles => {
-        resolve(enrichedArticles);
-      });
-    } else {
-      reject("no results returned");
-    }
-  });
-}
+function getArticlesByCategory (categoryId){
+  return pool
+    .query('SELECT * FROM articles WHERE category_id = $1', [categoryId])
+    .then(res => res.rows)
+    .catch(err => Promise.reject('No results returned'));
+};
 
-function getArticlesByMinDate(minDateStr) {
-  console.log("here");
-  console.log(minDateStr);
-  return new Promise((resolve, reject) => {
-    const minDate = new Date(minDateStr);
-    const filteredArticles = articles.filter(
-      (article) => new Date(article.articleDate) >= minDate
-    );
-    if (filteredArticles.length > 0) resolve(filteredArticles);
-    else reject("no results returned");
-  });
-}
 
-function getArticleById(Id) {
-  return new Promise((resolve, reject) => {
-    const foundArticle = articles.find((article) => article.Id == parseInt(Id));
-    if (foundArticle) resolve(foundArticle);
-    else reject("no result returned");
-  });
-}
+
+function getAllArticles(){
+  return pool.query('SELECT * FROM articles')
+  .then(res => res.rows)
+  .catch(err => Promise.reject('No results returned'));
+  };
+
+
+  function getArticlesByMinDate(minDateStr) {
+    return pool
+      .query(
+        `
+        SELECT articles.*, categories.name AS categoryName
+        FROM articles
+        LEFT JOIN categories ON articles.category = categories.id
+        WHERE articles.articleDate >= $1`,
+        [minDateStr]
+      )
+      .then(res => (res.rows.length ? res.rows : Promise.reject("No results returned")))
+      .catch(err => Promise.reject("No results returned"));
+  }
+
+function getArticleById (articleId) {
+  return pool
+    .query('SELECT * FROM articles WHERE id = $1', [articleId])
+    .then(res => (res.rows.length > 0 ? res.rows[0] : Promise.reject('No article found')))
+    .catch(err => Promise.reject('No results returned'));
+};
+
 
 // Function to get only published articles by filtering the articles array
 function getPublishedArticles() {
-  return Promise.resolve(articles.filter((article) => article.published)); // Return only articles with `published: true`
+  return pool
+    .query(
+      `
+      SELECT articles.*, categories.name AS categoryName
+      FROM articles
+      LEFT JOIN categories ON articles.category = categories.id
+      WHERE articles.published = true`
+    )
+    .then(res => res.rows)
+    .catch(err => Promise.reject("No results returned"));
 }
 
 // Function to get all categories
-function getCategories() {
-  return Promise.resolve(categories); // Return the categories array as a resolved promise
-}
+function getCategories () {
+  return pool.query('SELECT * FROM categories')
+  .then(res => res.rows)
+  .catch(err => Promise.reject('No results returned'));
+  };
+
 
 // Function to get all articles
 function getArticles() {
-  return Promise.resolve(articles); // Return the articles array as a resolved promise
+  return pool
+    .query('SELECT * FROM articles')
+    .then(res => res.rows) // Return the rows from the query result
+    .catch(err => Promise.reject("No results returned")); // Handle errors
 }
 
 function getCategoryNameById(categoryId) {
-  return getCategories().then(categories => {
-    const category = categories.find(cat => cat.Id === categoryId);  // Match by `Id` in categories.json
-    return category ? category.Name : null;  // Return the Name field of the category
-  });
+  return pool
+    .query('SELECT name FROM categories WHERE id = $1', [categoryId])
+    .then(res => (res.rows.length ? res.rows[0].name : null))
+    .catch(err => Promise.reject("Category not found"));
 }
 
 function addCategoryNameToArticles(articles) {
-  return Promise.all(articles.map(article => {
-    return getCategoryNameById(article.category)
-      .then(categoryName => ({
+  return Promise.all(
+    articles.map(article =>
+      getCategoryNameById(article.category).then(categoryName => ({
         ...article,
-        categoryName: categoryName || "Unknown"  // Add categoryName or "Unknown" if not found
-      }));
-  }));
+        categoryName: categoryName || "Unknown",
+      }))
+    )
+  );
 }
 
 // Export the functions as an object to make them available to other files
@@ -131,5 +154,6 @@ module.exports = {
   addArticle,
   getArticlesByCategory,
   getArticlesByMinDate,
-  getArticleById
+  getArticleById,
+  pool
 };
