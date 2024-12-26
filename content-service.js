@@ -5,10 +5,10 @@ const { parse } = require("path");
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  user: 'SenecaDB_owner',
-  host: 'ep-broad-sky-a58uyw44.us-east-2.aws.neon.tech',
-  database: 'blog_database',
-  password: 'uXqzYt3igEy8',
+  user: '',
+  host: '',
+  database: '',
+  password: '',
   port: 5432,
   ssl: { rejectUnauthorized: false },
 });
