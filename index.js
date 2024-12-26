@@ -17,9 +17,9 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views')); 
 
 cloudinary.config({
-    cloud_name: "dwnronnaa",
-    api_key: "861817752397373",
-    api_secret: "S3cV-3ukGg_gGthRAUdkZADMK7w",
+    cloud_name: "",
+    api_key: "",
+    api_secret: "",
     secure: true,
   });
 
@@ -80,8 +80,8 @@ app.get('/categories', (req, res) => {
           pageTitle: 'Add New Article',
           categories: categories, // Categories are passed here
           errorMessage: null, // No error, so errorMessage is null
-          footerText: 'Ankush Gauro, 108593237',
-          email: 'agauro@myseneca.ca'
+          footerText: 'Ankush Gauro, '',
+          email: ''
         });
       })
       .catch((err) => {
@@ -89,8 +89,8 @@ app.get('/categories', (req, res) => {
           pageTitle: 'Add New Article',
           categories: [], // Pass an empty array if categories fetch fails
           errorMessage: 'Failed to load categories. Please try again later.', // Error message passed
-          footerText: 'Ankush Gauro, 108593237',
-          email: 'agauro@myseneca.ca'
+          footerText: 'Ankush Gauro, ',
+          email: 'agauro@.ca'
         });
       });
   });
